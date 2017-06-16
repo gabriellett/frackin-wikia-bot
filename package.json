@@ -1,0 +1,32 @@
+{
+  "name": "frackin-wikia-bot",
+  "version": "1.0.0",
+  "description": "A wikia bot for the frackin universe starbound mod",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/gabriellett/frackin-wikia-bot"
+  },
+  "keywords": [
+    "frackin",
+    "universe",
+    "starbound",
+    "bot",
+    "wikia"
+  ],
+  "author": "Gabriel Lett Viviani",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.17.4",
+    "strip-json-comments": "^2.0.1",
+    "superagent": "^3.5.2"
+  }
+}
