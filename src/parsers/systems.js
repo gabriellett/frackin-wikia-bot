@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-FileUtils = require('../utils/file');
+const FileUtils = require('../utils/file');
 
 const frackinJson = FileUtils.frackinJson;
 

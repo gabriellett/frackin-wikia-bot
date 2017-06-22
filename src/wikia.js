@@ -74,6 +74,7 @@ const editPage = (page, title, template) => (agent, response) => {
       texts = splitText(template.text, 2000).map((text) => ({appendtext: text}))
       texts[0] = { text: texts[0].appendtext }
 
+      // Using all on images should work good, need to test it out, but we need each for the text
       return Promise.each(template.usedImages, (image) => postImage(agent, token, image))
         .then(Promise.each(texts, (text) => postEdit(agent, token, title, text)))
         .catch((e) => console.error(e))
@@ -110,12 +111,13 @@ const postImage = (agent, token, imagePath) => {
     token,
     action: 'upload',
     filename: imagePath.replace(/\//g,""),
-    format: "json"
+    format: "json",
+    ignorewarnings: true
   }
 
   return new Promise(function(resolve, reject) {
     return agent.post(`http://frackinuniversestaging.wikia.com/api.php?${query(params)}`)
-      .attach("file", `../FrackinUniverse${imagePath}`)
+      .attach("file", imagePath)
       .then((resp) => resp.body)
       .then(logJson)
       .then((json) => resolve(json))

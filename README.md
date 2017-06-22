@@ -2,14 +2,19 @@
 
 A ~bot-ish script created so the FrackinUniverse Wikia gets updated automatically
 
+It might be quite memory heavy
+
 Supported thigs:
 
 * [in-progress] Stars main page
+* [in-progress] Armors
 
 ## Requirements:
 
 * node 8.1.2 (might work in older versions, not sure)
-* rhash (So we can compare images between frackin unverse and wikia)
+
+* FrackinUniverse repo
+* Unpacked Starbound assets
 
 ## Installing
 
@@ -26,14 +31,7 @@ FRABOT_WIKIA_PASSWORD=yourpassword
 
 ## Run
 
-* ON the FrackinUniverse mod folder run:
-```
-(echo "{\n" && rhash -r --sha1 -p '"%p": "%h",\n' . && echo " \"null\": null\n }") > hashes.json
-```
-
-This will generate a hash.json file with all the paths and hashes for every file in the repo
-
-And run using: 
+Run everything: 
 ```
 node index.js
 ```

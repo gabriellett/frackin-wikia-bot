@@ -16,7 +16,6 @@ const pageName = "Hello, i'm a title!";
 Wikia.login(username, password, [])
   .then(Wikia.fetchImagesGivenAgent)
   .then(({agent, images}) => {
-    const template = systemsTemplate(systems, images, frackinHashes);
-
+    const template = systemsTemplate(systems, images);
     return Wikia.editPage(pageName, "Hello, i'm a title!", template)(agent)
   });
