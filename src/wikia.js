@@ -70,33 +70,29 @@ const editPage = (page, title, template) => (agent, response) => {
     .catch((e) => console.error(e))
     .then(logJson)
     .then((token) => {
-      // We need to split the text because the API won't work with body parameters
-      texts = splitText(template.text, 2000).map((text) => ({appendtext: text}))
-      texts[0] = { text: texts[0].appendtext }
-
       // Using all on images should work good, need to test it out, but we need each for the text
       return Promise.each(template.usedImages, (image) => postImage(agent, token, image))
-        .then(Promise.each(texts, (text) => postEdit(agent, token, title, text)))
+        .then(postEdit(agent, token, title, template.text))
         .catch((e) => console.error(e))
-
     });
 };
 
 
 // Textobj will be appended to the params.
 // Need to be like this so we can append or change the entire text of the page
-const postEdit = (agent, token, title, textObj) => {
-  const params = query(_.merge({
+const postEdit = (agent, token, title, text) => {
+  const params = query({
     token,
     action: 'edit',
     title: title,
     bot: true,
     format: 'json'
-  }, textObj));
+  });
 
 
   return new Promise(function(resolve, reject) {
     return agent.post(`http://frackinuniversestaging.wikia.com/api.php?${params}`)
+    .field('text', text)
     .catch((e) => console.error(e))
     .then((resp) => resp.body)
     .then(logJson)
