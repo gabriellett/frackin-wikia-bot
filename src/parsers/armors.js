@@ -87,7 +87,7 @@ const fullSets = (recipes, bonuses, levelingFunctions) => {
     const setName = folder.split("/").pop();
 
     // Create the set directory
-    mkdirp(`./temp/armors/${folder.split("armors/")[1]}`, (err) => err ? console.error(err) : null);
+    mkdirp(`./temp/armors/${folder.split("armors/")[1]}`, (err) => err ? console.error("Error on create folder:", err) : "");
 
     const setBonusName = parseSetBonus(headJson, chestJson, legsJson);
     var setBonusEffect = setBonusName;

@@ -27,7 +27,9 @@ console.log(password);
 Wikia.login(username, password, [])
   .then(Wikia.fetchImagesGivenAgent)
   .then(({agent, images}) => {
+    console.log("Starting parsing...");
     return armors.fullSets(recipesByItem, bonuses, levelingFunctions)
+      .then((a) => { console.log("Parsed!"); return a })
       .then((pArmors) => armorsTemplate(pArmors, itemsByItem, images))
       .then((template) => Wikia.editPage("Armors Test", "Armors Test", template)(agent));
   }).catch((e) => console.error(e));

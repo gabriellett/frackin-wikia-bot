@@ -22,7 +22,7 @@ const findByExtensions = (startPath, extensions, start) => {
 
 	start = start || [];
 	if (!fs.existsSync(startPath)){
-		console.log("no dir ", startPath);
+		console.log("No dir ", startPath);
 		return start;
 	}
 

@@ -58,7 +58,7 @@ const processArmor = (parts, finalPath) => {
     ]).then((images) => {
       images.forEach((i) => i.crop(43, 0, 43, 43));
 
-      new Jimp(43, 43, (e, img) => console.error(e))
+      new Jimp(43, 43, (e, img) => e ? console.error("Error creating JIMP image:", e) : "")
         .composite(replaceColors(images[0], parts.pants.colors), 0, 2)
         .composite(replaceColors(images[1], parts.pants.colors), 0, 0)
         .composite(replaceColors(images[2], parts.bsleeve.colors), 0, 0)
