@@ -59,8 +59,18 @@ const genTemplate = (data, items, images) => {
   const usedImages = [];
   const recipeFun = generateRecipe(images, items, data);
 
-  const text = data.map((armor) => (`
-==== ${armor.name} ====
+  const armorsByTier = data.reduce((acc, cur) => {
+    acc[Number(cur.level)] = (acc[Number(cur.level)] || []).concat(cur);
+    return acc;
+  }, {})
+
+  const text = Object.keys(armorsByTier).sort().filter((o) => o > 0).map((tier) => `
+
+== Tier ${tier} ==
+
+${armorsByTier[tier].map((armor) => (`
+
+=== ${armor.name} ===
 
 {| class="article-table"
 ! colspan="2" rowspan="2" | ${getImageOrPlaceholder(`${armor.imagesPath}fullset.png`, "86x86px", images, usedImages, false)}
@@ -121,7 +131,7 @@ ${recipeFun(armor.pants, usedImages)}
 |${getStat(armor.chest, 'maxHealth')}
 |${getImageOrPlaceholder(`${starboundFile('interface/inventory/heart.png')}`, "30x30px", images, usedImages, false)}
 |${getStat(armor.pants, 'maxHealth')}
-|}`)).join(`\n\n`);
+|}`)).join(`\n\n`)}`)
 
   return { usedImages: _.uniq(usedImages), text: `<div class="armor-list">\n${text}\n</div>` };
 }
