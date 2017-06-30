@@ -88,7 +88,7 @@ ${armorsByTier[tier].map((armor) => {
 |-`;
 
   } else {
-    console.log(armor.head.description);
+    console.log("This armor description is not the same on every piece: ", armor.head.description);
     piecesDescription = `-
 | colspan="2" | ${showIfValid(armor.head.description)}
 | colspan="2" | ${showIfValid(armor.chest.description)}
