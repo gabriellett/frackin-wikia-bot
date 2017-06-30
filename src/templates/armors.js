@@ -160,7 +160,7 @@ ${recipeFun(armor.pants, usedImages)}
 |${getStat(armor.chest, 'maxHealth')}
 |${getImageOrPlaceholder(`${starboundFile('interface/inventory/heart.png')}`, "30x30px", images, usedImages, false)}
 |${getStat(armor.pants, 'maxHealth')}
-|${piecesDescription}}`}).join(`\n\n`)}`)
+|${piecesDescription}}`}).join(`\n\n`)}`).join("\n")
 
   return { usedImages: _.uniq(usedImages), text: `<div class="armor-list">\n${text}\n</div>` };
 }
