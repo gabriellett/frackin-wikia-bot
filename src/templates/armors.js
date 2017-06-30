@@ -54,7 +54,16 @@ const genMaxStat = (armor, stat) => (getStat(armor.chest, stat) + getStat(armor.
 const getStat = (json, stat) => {
   const eff = json.leveledStatusEffects.find((x) => x.stat === stat);
   return eff ? Number(eff.value.toFixed(2)) : 0;
-}
+};
+
+const showIfValid = (str) => {
+  if (str === undefined || str === null){
+    return "";
+  } else {
+    return str;
+  }
+};
+
 const genTemplate = (data, items, images) => {
   const usedImages = [];
   const recipeFun = generateRecipe(images, items, data);
@@ -68,7 +77,27 @@ const genTemplate = (data, items, images) => {
 
 == Tier ${tier} ==
 
-${armorsByTier[tier].map((armor) => (`
+${armorsByTier[tier].map((armor) => {
+  var setDescription = '';
+  var piecesDescription = '';
+
+  if (armor.head.description === armor.chest.description &&  armor.chest.description === armor.pants.description) {
+    setDescription = `
+|
+| colspan="5" |${armor.head.description}
+|-`;
+
+  } else {
+    console.log(armor.head.description);
+    piecesDescription = `-
+| colspan="2" | ${showIfValid(armor.head.description)}
+| colspan="2" | ${showIfValid(armor.chest.description)}
+| colspan="2" | ${showIfValid(armor.pants.description)}
+|`;
+  }
+
+
+  return `
 
 === ${armor.name} ===
 
@@ -86,7 +115,7 @@ ${armorsByTier[tier].map((armor) => (`
 |-
 |Bonuses
 | colspan="5" |${armor.bonus ? armor.bonus.label : ""}
-|-
+|-${setDescription}
 | colspan="2" |${armor.head.name}
 | colspan="2" |${armor.chest.name}
 | colspan="2" |${armor.pants.name}
@@ -131,7 +160,7 @@ ${recipeFun(armor.pants, usedImages)}
 |${getStat(armor.chest, 'maxHealth')}
 |${getImageOrPlaceholder(`${starboundFile('interface/inventory/heart.png')}`, "30x30px", images, usedImages, false)}
 |${getStat(armor.pants, 'maxHealth')}
-|}`)).join(`\n\n`)}`)
+|${piecesDescription}}`}).join(`\n\n`)}`)
 
   return { usedImages: _.uniq(usedImages), text: `<div class="armor-list">\n${text}\n</div>` };
 }

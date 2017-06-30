@@ -68,6 +68,24 @@ const generateLeveledStatus = (levelingFunctions) => (json) => json.leveledStatu
   };
 });
 
+const parseDescription = (description) => description
+  .replace(/\^reset;/g, ", ")
+  .replace(/(\^.*?\;)/g, " ")
+  .replace(/\ \ /g, " ")
+  .replace(/\,\ \,/g, ",")
+  .replace(/\.\ \,/g, ".")
+  .slice(0, -1);
+
+const parseArmorPiece = (pieceJson, recipes, genLeveledStatus) => ({
+  id: pieceJson.itemName,
+  name: pieceJson.shortdescription,
+  level: pieceJson.level,
+  recipe: recipes[pieceJson.itemName],
+  icon: pieceJson.inventoryIcon,
+  leveledStatusEffects: genLeveledStatus(pieceJson),
+  description: parseDescription(pieceJson.description)
+})
+
 // Generate the set json
 const fullSets = (recipes, bonuses, levelingFunctions) => {
   const genLeveledStatus = generateLeveledStatus(levelingFunctions);
@@ -127,30 +145,9 @@ const fullSets = (recipes, bonuses, levelingFunctions) => {
         imagesPath: `./temp/armors/${folder.split("armors/")[1]}/`,
         level: Math.min.apply(null, [headJson.level, chestJson.level, chestJson.level]),
         bonus: setBonus,
-        head: {
-          id: headJson.itemName,
-          name: headJson.shortdescription,
-          level: headJson.level,
-          recipe: recipes[headJson.itemName],
-          icon: headJson.inventoryIcon,
-          leveledStatusEffects: genLeveledStatus(headJson)
-        },
-        chest: {
-          id: chestJson.itemName,
-          name: chestJson.shortdescription,
-          level: chestJson.level,
-          recipe: recipes[chestJson.itemName],
-          icon: chestJson.inventoryIcon,
-          leveledStatusEffects: genLeveledStatus(chestJson)
-        },
-        pants: {
-          id: legsJson.itemName,
-          name: legsJson.shortdescription,
-          level: legsJson.level,
-          recipe: recipes[legsJson.itemName],
-          icon: legsJson.inventoryIcon,
-          leveledStatusEffects: genLeveledStatus(legsJson)
-        }
+        head: parseArmorPiece(headJson, recipes, genLeveledStatus),
+        chest: parseArmorPiece(chestJson, recipes, genLeveledStatus),
+        pants: parseArmorPiece(legsJson, recipes, genLeveledStatus)
       });
     });
   });
