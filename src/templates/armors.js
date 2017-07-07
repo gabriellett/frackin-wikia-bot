@@ -12,37 +12,52 @@ const getImageOrPlaceholder = (image, size, images, usedImages, thumb) => {
   const sha1 = sha1File(path);
   thumb = thumb !== undefined ? thumb : true;
   if (images[sha1]) {
-    return `[[${images[sha1].title}|${thumb ? 'thumb|' : ''}${size}]]`;
+    return `[[${images[sha1].title}|${thumb ? 'thumb|' : ''}${size ? size : ''}]]`;
   } else {
     // Add the image to the list of used images
     usedImages.push(path);
-    return `[[File:${path.replace(/\//g,"")}|${thumb ? 'thumb|' : ''}${size}]]`;
+    return `[[File:${path.replace(/\//g,"")}|${thumb ? 'thumb|' : ''}${size ? size : ''}]]`;
+  }
+}
+
+const fetchItemInfoForItemOrArmor = (armors, items, item) => {
+  let icon = "";
+  let description = "";
+
+  if (items[item] && items[item].inventoryIcon.indexOf(".png:") == -1) {
+    icon = items[item].inventoryIcon.slice(1);
+    description = items[item].shortdescription;
+  } else {
+    armorObj = _.flatten(armors.map((a) => [
+      Object.assign({}, a.head, {imagesPath: a.imagesPath}),
+      Object.assign({}, a.chest, {imagesPath: a.imagesPath}),
+      Object.assign({}, a.pants, {imagesPath: a.imagesPath}),
+    ])).find((a) => a.id === item)
+
+    // Turn icon.png:head into iconhead.png
+    icon = armorObj.imagesPath + armorObj.icon.replace(".png","").replace("s:","") + ".png";
+    description = armorObj.name;
+  }
+
+  return { icon, description }
+}
+
+const generateUnlockedBy = (images, items, armors) => (unlockedBy, usedImages) => {
+  if (unlockedBy) {
+    return unlockedBy.map((i) => {
+      const { description, icon } = fetchItemInfoForItemOrArmor(armors, items, i);
+      return `${getImageOrPlaceholder(icon, "16x16px", images, usedImages, false)} [[${description.replace(/(\^.*?\;)/g, "")}]]`;
+    }).join(`, `);
+  } else{
+    return "";
   }
 }
 
 const generateRecipe = (images, items, armors) => (item, usedImages) => {
   if (item.recipe) {
     return item.recipe.map((i) => {
-      let icon = ""
-      let description = ""
-
-      if (items[i.item]) {
-        icon = items[i.item].inventoryIcon.slice(1);
-        description = items[i.item].shortdescription;
-      } else {
-        item = _.flatten(armors.map((a) => [
-          Object.assign({}, a.head, {imagesPath: a.imagesPath}),
-          Object.assign({}, a.chest, {imagesPath: a.imagesPath}),
-          Object.assign({}, a.pants, {imagesPath: a.imagesPath}),
-        ])).find((a) => a.id === i.item)
-
-        // Turn icon.png:head into iconhead.png
-
-        icon = item.imagesPath + item.icon.replace(".png","").replace("s:","") + ".png";
-        description = item.name;
-      }
-      return `<p>${getImageOrPlaceholder(icon, "16x16px", images, usedImages)}${i.count} x ${description.replace(/(\^.*?\;)/g, "")}</p>`;
-      //return `[[File:Cotton.png|thumb|16x16px]]${i.count} x ${description.replace(/(\^.*?\;)/g, "")}`;
+      const { description, icon } = fetchItemInfoForItemOrArmor(armors, items, i.item);
+      return `<p>${getImageOrPlaceholder(icon, "16x16px", images, usedImages)}${i.count} x [[${description.replace(/(\^.*?\;)/g, "")}]]</p>`;
     }).join(`\n`);
   } else{
     return "";
@@ -64,9 +79,10 @@ const showIfValid = (str) => {
   }
 };
 
-const genTemplate = (data, items, images) => {
+const genTemplate = (data, items, itemsByUnlock, images) => {
   const usedImages = [];
   const recipeFun = generateRecipe(images, items, data);
+  const unlockedBy = generateUnlockedBy(images, items, data);
 
   const armorsByTier = data.reduce((acc, cur) => {
     acc[Number(cur.level)] = (acc[Number(cur.level)] || []).concat(cur);
@@ -83,8 +99,7 @@ ${armorsByTier[tier].map((armor) => {
 
   if (armor.head.description === armor.chest.description &&  armor.chest.description === armor.pants.description) {
     setDescription = `
-|
-| colspan="5" |${armor.head.description}
+| colspan="6" |${armor.head.description}
 |-`;
 
   } else {
@@ -112,10 +127,10 @@ ${armorsByTier[tier].map((armor) => {
 |${genMaxStat(armor, 'protection')}
 |${genMaxStat(armor, 'maxEnergy')}
 |${genMaxStat(armor, 'maxHealth')}
-|-
-|Bonuses
-| colspan="5" |${armor.bonus ? armor.bonus.label : ""}
 |-${setDescription}
+| colspan="2" | Unlocked by
+| colspan="4" |${unlockedBy(itemsByUnlock[armor.head.id], usedImages)}
+|-
 | colspan="2" |${armor.head.name}
 | colspan="2" |${armor.chest.name}
 | colspan="2" |${armor.pants.name}

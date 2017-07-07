@@ -20,12 +20,12 @@ const getDirectoriesExcept = (srcpath, except) => {
 }
 
 // Will remove every dir except tier dir I think
-const mainDirectories = getDirectoriesExcept(frackinFile('items/armors'), ['bees', 'backitems', 'costumes', 'crew', 'decorative', 'other', 'unique'])
+const mainDirectories = getDirectoriesExcept(frackinFile('items/armors'), ['bees', 'backitems', 'costumes', 'crew', 'other', 'unique', 'decorative']).concat(getDirectoriesExcept(frackinFile('items/armors/decorative'), []));
 
 // Return the FULL SETS directories, checks if every dir has a .chest, .head and .legs file
 const fullSetDirectories = () => _.flatten(mainDirectories.map((dir) => getDirectoriesExcept(frackinFile(dir), [])))
   .filter((dir) => {
-    const containedPaths = fs.readdirSync(dir)
+    const containedPaths = fs.readdirSync(dir);
     return containedPaths.find((e) => e.endsWith(".head")) &&
       containedPaths.find((e) => e.endsWith(".chest")) &&
       containedPaths.find((e) => e.endsWith(".legs"))

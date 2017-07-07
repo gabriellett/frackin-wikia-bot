@@ -14,6 +14,7 @@ const armorsTemplate = require('./src/templates/armors.js');
 const bonuses = statusEffects.bonuses();
 const recipesByItem = recipes.recipesByItem()
 const itemsByItem = items.itemsByItemName();
+const itemsByUnlock = items.itemsByUnlock();
 const levelingFunctions = leveling.levelingFunctionsByName();
 
 // Retrieve the username and password from the ENV
